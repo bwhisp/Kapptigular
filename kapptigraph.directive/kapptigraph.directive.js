@@ -17,7 +17,6 @@
         var directive;
 
         function link(scope, element, attrs) {
-            console.log('link scope.infos : '+ scope.infos.duration);
             var generateQuery = function (ops, metrics, duration) {
                 /**
                  * This function generates the query for the given information
@@ -28,7 +27,6 @@
                  * aggregation : (string) In order to have a suitable amount of points,
                  *                we group the results by a certain amount of time
                  */
-                console.log('gQuery')
                 var corresp = {'1d': '1m', '12h': '30s', '1h': '3s', '30m': '2s', '10m': '1s'};
                 // Make mean as the default operation
                 ops = ops === null ? 'mean' : ops;
@@ -45,12 +43,10 @@
                     metrics_str += metric + ', ';
                 });
                 metrics_str = metrics_str.slice(0, -2);
-                console.log('link:generateQuery:metrics ' + metrics_str);
                 ops.forEach(function (op) {
                     ops_str += op + '(value), ';
                 });
                 ops_str = ops_str.slice(0, -2);
-                console.log('link:genQuery:ops ' + ops_str);
 
                 return 'SELECT ' + ops_str + ' FROM ' + metrics_str + ' WHERE time > now() - ' + duration + ' GROUP BY time(' + aggregation + ')';
             };
@@ -61,7 +57,6 @@
                  * query : (string) The query that was built by generateQuery
                  */
 
-                console.log('getDB');
                 var url = 'http://178.62.125.228:8086/query?db=rand_data&q=' + generateQuery(infos.ops, infos.metrics, infos.duration);
                 $http.get(url)
                     .success(function (data) {
@@ -91,7 +86,7 @@
 
             var timeoutId = $interval(function () {
                 getFromDB(scope.infos);
-            }, 200000);
+            }, 1000);
 
             getFromDB(scope.infos);
             scope.data = [
